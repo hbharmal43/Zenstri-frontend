@@ -9,7 +9,9 @@ function required(root, selector) {
 export function getDom(root = document) {
   return {
     signInButton: required(root, '[data-auth-sign-in]'),
+    signInButtons: root.querySelectorAll('[data-auth-sign-in]'),
     signOutButton: required(root, '[data-auth-sign-out]'),
+    bypassButtons: root.querySelectorAll('[data-auth-bypass]'),
     dashboard: required(root, '[data-dashboard]'),
     userName: required(root, '[data-user-name]'),
     auditStatus: required(root, '[data-audit-status]'),

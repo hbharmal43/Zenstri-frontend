@@ -1,5 +1,5 @@
 import { getDom } from './dom.js';
-import { signInWithGitHub, signOutUser, subscribeToAuthState } from './auth.js';
+import { signInWithGitHub, signOutUser, subscribeToAuthState, signInAsGuest } from './auth.js';
 import { ApiClient } from './api.js';
 import { DashboardController } from './dashboard.js';
 import { renderAuthState, renderError, renderFindings, renderLogs } from './render.js';
@@ -12,12 +12,24 @@ dashboard.start();
 renderLogs(dom, []);
 renderFindings(dom, []);
 
-dom.signInButton.addEventListener('click', async () => {
-  try {
-    await signInWithGitHub();
-  } catch (error) {
-    renderError(dom, error.message);
-  }
+dom.signInButtons.forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    try {
+      await signInWithGitHub();
+    } catch (error) {
+      renderError(dom, error.message);
+    }
+  });
+});
+
+dom.bypassButtons.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    try {
+      signInAsGuest();
+    } catch (error) {
+      renderError(dom, error.message);
+    }
+  });
 });
 
 dom.signOutButton.addEventListener('click', async () => {

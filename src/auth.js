@@ -1,6 +1,9 @@
 import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth';
 import { getFirebaseServices } from './firebase.js';
 
+let currentMockUser = null;
+const authObservers = [];
+
 export function normalizeFirebaseUser(user) {
   if (!user) {
     return null;
@@ -30,11 +33,66 @@ export async function signOutUser({
   auth,
   signOutImpl = signOut
 } = getFirebaseServices()) {
+  if (currentMockUser) {
+    clearGuestSession();
+    return;
+  }
   return signOutImpl(auth);
 }
 
 export function subscribeToAuthState(callback, services = getFirebaseServices()) {
-  return onAuthStateChanged(services.auth, (user) => {
-    callback(normalizeFirebaseUser(user), user);
+  authObservers.push(callback);
+
+  const unsubscribe = onAuthStateChanged(services.auth, (user) => {
+    if (!currentMockUser) {
+      callback(normalizeFirebaseUser(user), user);
+    }
   });
+
+  if (currentMockUser) {
+    callback(currentMockUser.profile, currentMockUser.user);
+  }
+
+  return () => {
+    unsubscribe();
+    const index = authObservers.indexOf(callback);
+    if (index !== -1) {
+      authObservers.splice(index, 1);
+    }
+  };
 }
+
+export function signInAsGuest() {
+  const mockUser = {
+    uid: 'mock-guest-uid',
+    displayName: 'Guest User',
+    email: 'guest@zenstri.dev',
+    photoURL: 'https://avatars.githubusercontent.com/u/9919',
+    getIdToken: async () => 'mock-guest-token'
+  };
+
+  currentMockUser = {
+    profile: {
+      uid: mockUser.uid,
+      displayName: mockUser.displayName,
+      email: mockUser.email,
+      photoURL: mockUser.photoURL,
+      githubProviderUid: '9919'
+    },
+    user: mockUser
+  };
+
+  for (const observer of authObservers) {
+    observer(currentMockUser.profile, currentMockUser.user);
+  }
+}
+
+export function clearGuestSession() {
+  currentMockUser = null;
+  const services = getFirebaseServices();
+  const user = services.auth.currentUser;
+  for (const observer of authObservers) {
+    observer(normalizeFirebaseUser(user), user);
+  }
+}
+
