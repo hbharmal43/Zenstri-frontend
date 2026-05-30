@@ -8,7 +8,7 @@ import { useAuditStream } from '@/hooks/useAuditStream';
 import ConsentModal from '@/components/ConsentModal';
 
 export default function DashboardPage() {
-  const { user, token, loading } = useAuth();
+  const { user, token, loading, signOut } = useAuth();
   const router = useRouter();
 
   const [repoFullName, setRepoFullName] = useState('');
@@ -30,11 +30,9 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <main className="dashboard-page-container">
-        <div className="glass-panel complex-glass auth-box align-center">
-          <div className="loading-spinner"></div>
-          <p className="loading-text">Loading secure session...</p>
-        </div>
+      <main className="dashboard-loading-screen">
+        <div className="loading-spinner"></div>
+        <p className="loading-text">Loading secure session...</p>
       </main>
     );
   }
@@ -104,139 +102,207 @@ export default function DashboardPage() {
   };
 
   return (
-    <main className="dashboard-page-container">
-      <div className="hero-backdrop" style={{ backgroundImage: "url('/hero.jpg')" }}></div>
-      <div className="hero-overlay"></div>
-
-      <section className="dashboard-panel container animate-fade-in" style={{ zIndex: 10, position: 'relative' }}>
-        <div className="dashboard-panel__header">
-          <div>
-            <p className="eyebrow">Authenticated Dashboard Workspace</p>
-            <h2>Audit control room</h2>
-          </div>
-          <div className="dashboard-panel__user">
-            <span className="user-dot"></span>
-            Signed in as: <strong>{user.displayName || user.email}</strong>
-          </div>
+    <main className="dashboard-layout">
+      {/* Left Sidebar (All White with thin gray border) */}
+      <aside className="dashboard-sidebar">
+        <div className="sidebar-logo">
+          <img className="logo-svg" src="/assets/logo.svg" alt="Zenstri Logo" />
+          <span className="logo-text">Zenstri</span>
         </div>
 
-        <div className="dashboard-grid">
-          {/* Project configuration input forms */}
-          <form className="dashboard-form glass-panel" onSubmit={handleSaveProject}>
-            <label>
-              GitHub repository (owner/repo)
-              <input 
-                value={repoFullName} 
-                onChange={e => setRepoFullName(e.target.value)} 
-                placeholder="my-github-username/vibe-coded-saas" 
-                required 
-                disabled={saving}
-              />
-            </label>
-            <label>
-              Live production application URL
-              <input 
-                value={liveUrl} 
-                onChange={e => setLiveUrl(e.target.value)} 
-                type="url" 
-                placeholder="https://my-vibe-app.vercel.app" 
-                required 
-                disabled={saving}
-              />
-            </label>
-            <div className="dashboard-actions">
-              <button 
-                className="btn btn-outline" 
-                type="button" 
-                onClick={handleConnectGitHub}
-              >
-                Connect GitHub App
-              </button>
-              <button 
-                className="btn btn-primary" 
-                type="submit"
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : 'Save project'}
-              </button>
-              <button 
-                className="btn btn-primary" 
-                type="button" 
-                onClick={handleRunAudit} 
-                disabled={!project || auditing}
-              >
-                {auditing ? 'Starting...' : 'Run audit'}
-              </button>
-            </div>
-            {(error || streamError) && (
-              <p className="dashboard-error">{error || streamError}</p>
-            )}
-          </form>
+        <nav className="sidebar-nav">
+          <a href="#" className="sidebar-nav-item active">
+            <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+            </svg>
+            <span>Workspace</span>
+          </a>
+          <a href="#" className="sidebar-nav-item">
+            <svg className="nav-item-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+            </svg>
+            <span>Settings</span>
+          </a>
+        </nav>
 
-          {/* Audit execution status panel */}
-          <div className="audit-status-panel glass-panel">
-            <h3>Audit Status</h3>
-            <div className="status-indicator-block">
-              {audit ? (
-                <>
-                  <div className={`dash-status-badge ${audit.status === 'completed' ? 'safe' : audit.status === 'failed' ? 'danger' : 'running'}`}>
-                    <span className={`dash-status-dot ${audit.status === 'completed' ? 'green' : audit.status === 'failed' ? 'red' : 'orange'}`}></span>
-                    <span style={{ textTransform: 'capitalize' }}>{audit.status}</span>
-                  </div>
-                  {audit.summary && <p className="status-summary">{audit.summary}</p>}
-                </>
-              ) : (
-                <p className="status-placeholder">No audits have run yet. Configure your repository details above to launch a security probe.</p>
+        <div className="sidebar-footer">
+          <div className="sidebar-user-info">
+            <span className="user-avatar-dot"></span>
+            <div className="user-meta-col">
+              <span className="user-meta-name">{user.displayName || 'Developer'}</span>
+              <span className="user-meta-email">{user.email}</span>
+            </div>
+          </div>
+          <button className="btn-sidebar-signout" onClick={() => signOut()}>
+            Sign Out
+          </button>
+        </div>
+      </aside>
+
+      {/* Right Workspace Panel (Light Mode Theme) */}
+      <section className="dashboard-main">
+        {/* Top Header Bar */}
+        <header className="dashboard-main-header">
+          <div className="header-meta-col">
+            <span className="header-eyebrow">Zenstri Control Room</span>
+            <h2>Active Audit Workspace</h2>
+          </div>
+          <div className="header-project-badge">
+            <span className="badge-dot orange"></span>
+            <span>Production Project Panel</span>
+          </div>
+        </header>
+
+        {/* Workspace Content */}
+        <div className="dashboard-main-content">
+          <div className="light-grid-row">
+            {/* Project Settings Card */}
+            <form className="card-light project-config-card" onSubmit={handleSaveProject}>
+              <h3>Project Configuration</h3>
+              <p className="card-subtext-light">Configure your workspace target repository and live URL to initialize security probes.</p>
+
+              <div className="input-group-light">
+                <label>GitHub repository (owner/repo)</label>
+                <input 
+                  className="input-light"
+                  value={repoFullName} 
+                  onChange={e => setRepoFullName(e.target.value)} 
+                  placeholder="my-github-username/vibe-coded-saas" 
+                  required 
+                  disabled={saving}
+                />
+              </div>
+
+              <div className="input-group-light">
+                <label>Live production application URL</label>
+                <input 
+                  className="input-light"
+                  value={liveUrl} 
+                  onChange={e => setLiveUrl(e.target.value)} 
+                  type="url" 
+                  placeholder="https://my-vibe-app.vercel.app" 
+                  required 
+                  disabled={saving}
+                />
+              </div>
+
+              <div className="actions-row-light">
+                <button 
+                  className="btn-light-secondary" 
+                  type="button" 
+                  onClick={handleConnectGitHub}
+                >
+                  Connect GitHub App
+                </button>
+                <button 
+                  className="btn-orange" 
+                  type="submit"
+                  disabled={saving}
+                >
+                  {saving ? 'Saving...' : 'Save project'}
+                </button>
+                <button 
+                  className="btn-orange-outline" 
+                  type="button" 
+                  onClick={handleRunAudit} 
+                  disabled={!project || auditing}
+                >
+                  {auditing ? 'Initializing...' : 'Run active audit'}
+                </button>
+              </div>
+
+              {(error || streamError) && (
+                <p className="dashboard-error-light">{error || streamError}</p>
               )}
-            </div>
-          </div>
-        </div>
+            </form>
 
-        {/* Console logs and vulnerabilities findings grid */}
-        {activeAuditId && (
-          <div className="dashboard-grid dashboard-grid--results" style={{ marginTop: '2rem' }}>
-            <section className="audit-stream glass-panel dark">
-              <h3>Agent Execution Logs</h3>
-              <div className="terminal-viewport logs-viewport" style={{ maxHeight: '350px', overflowY: 'auto' }}>
-                {logs.length > 0 ? (
-                  logs.map(log => (
-                    <div key={log.id} className="terminal-row">
-                      {log.message}
+            {/* Audit Status Card */}
+            <div className="card-light status-overview-card">
+              <h3>Audit Diagnostic</h3>
+              <p className="card-subtext-light">Current execution state of Zenstri exploitation agents.</p>
+
+              <div className="status-display-block">
+                {audit ? (
+                  <>
+                    <div className={`status-badge-light status-${audit.status}`}>
+                      <span className="status-badge-dot"></span>
+                      <span>{audit.status}</span>
                     </div>
-                  ))
+                    {audit.summary && (
+                      <p className="status-summary-text">{audit.summary}</p>
+                    )}
+                  </>
                 ) : (
-                  <div className="terminal-row muted">Listening for stream logs...</div>
-                )}
-              </div>
-            </section>
-            
-            <section className="finding-stream glass-panel">
-              <h3>Security Vulnerabilities Findings</h3>
-              <div className="findings-viewport" style={{ maxHeight: '350px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                {findings.length > 0 ? (
-                  findings.map(finding => (
-                    <div key={finding.id} className={`finding-card severity-${finding.severity.toLowerCase()}`}>
-                      <div className="finding-header">
-                        <h4>{finding.title}</h4>
-                        <span className={`severity-tag ${finding.severity.toLowerCase()}`}>
-                          {finding.severity}
-                        </span>
-                      </div>
-                      {finding.description && <p className="finding-desc">{finding.description}</p>}
-                      <span className={`status-tag ${finding.status.toLowerCase()}`}>
-                        {finding.status}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="result-placeholder">
-                    <p>No issues detected so far. Zenstri agents are scanning...</p>
+                  <div className="status-idle-placeholder">
+                    <svg className="idle-shield-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                    <p>No scans have run yet. Fill in your project configurations and click "Run active audit" to stream logs.</p>
                   </div>
                 )}
               </div>
-            </section>
+            </div>
           </div>
-        )}
+
+          {/* Results Console Section */}
+          {activeAuditId && (
+            <div className="results-grid-row-light">
+              {/* Agent Monospace Terminal logs */}
+              <div className="card-light logs-card-light">
+                <h3>Agent Execution Stream</h3>
+                <p className="card-subtext-light">Realtime execution trace output of the sandboxed security worker.</p>
+                
+                <div className="console-light-viewport">
+                  {logs.length > 0 ? (
+                    logs.map(log => (
+                      <div key={log.id} className="console-line">
+                        <span className="console-arrow">&gt;</span> {log.message}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="console-line muted">Awaiting log streams...</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Vulnerabilities Findings Column */}
+              <div className="card-light findings-card-light">
+                <h3>Vulnerabilities Findings</h3>
+                <p className="card-subtext-light">List of active exploits detected on the target site.</p>
+                
+                <div className="findings-stream-light">
+                  {findings.length > 0 ? (
+                    findings.map(finding => (
+                      <div 
+                        key={finding.id} 
+                        className={`finding-item-card-light severity-${finding.severity.toLowerCase()}`}
+                      >
+                        <div className="finding-item-header">
+                          <h4>{finding.title}</h4>
+                          <span className={`badge-severity-light ${finding.severity.toLowerCase()}`}>
+                            {finding.severity}
+                          </span>
+                        </div>
+                        {finding.description && (
+                          <p className="finding-item-desc">{finding.description}</p>
+                        )}
+                        <div className="finding-item-footer">
+                          <span className="status-bullet"></span>
+                          <span>{finding.status}</span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="findings-idle-placeholder">
+                      <p>Scanning in progress. Vulnerability issues will appear here automatically.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       {showConsent && (

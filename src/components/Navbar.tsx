@@ -3,10 +3,15 @@
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
   const { user, signOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  // Hide navbar on non-homepage routes (login, signup, dashboard)
+  if (pathname !== '/') return null;
 
   return (
     <header className="glass-header" id="navbar">
