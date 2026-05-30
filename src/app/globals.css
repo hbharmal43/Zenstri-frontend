@@ -2083,3 +2083,117 @@ footer {
   }
 }
 
+/* =========================================
+   Dedicated Auth Page Styles (Login/Signup)
+   ========================================= */
+
+.auth-page-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.auth-box {
+  position: relative;
+  width: 100%;
+  max-width: 480px;
+  padding: 3rem 2.5rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.auth-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.auth-logo-row .logo-svg {
+  width: 40px;
+  height: 40px;
+}
+
+.auth-logo-row .logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.auth-box h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+  font-size: 15px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin-bottom: 2.5rem;
+  max-width: 360px;
+}
+
+.btn-auth {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.auth-footer {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 1rem;
+}
+
+.auth-footer a {
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-footer a:hover {
+  color: #ff7830;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 92, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #FF5C00;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  font-size: 15px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+
