@@ -2191,9 +2191,232 @@ footer {
   color: #94a3b8;
   font-weight: 500;
 }
-
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
+/* =========================================
+   Dedicated Split-Screen Auth Page Styles
+   ========================================= */
 
+.split-auth-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #0f172a; /* Slate 900 base */
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999; /* Fully hides the main layout */
+}
+
+.auth-loading-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #0f172a;
+}
+
+/* Left Brand Column (Dark Premium) */
+.auth-brand-side {
+  flex: 1.1;
+  position: relative;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  display: flex;
+  align-items: center;
+  padding: 4rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.auth-brand-bg-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.03;
+  background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+}
+
+.auth-brand-content {
+  max-width: 480px;
+  position: relative;
+  z-index: 10;
+}
+
+.brand-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 3rem;
+}
+
+.brand-logo-row .logo-svg {
+  width: 36px;
+  height: 36px;
+}
+
+.brand-logo-row .logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: #fff;
+}
+
+.brand-heading {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  letter-spacing: -1px;
+}
+
+.brand-subtext {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #94a3b8;
+  margin-bottom: 3rem;
+}
+
+.brand-bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.brand-bullet-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  color: #cbd5e1;
+  font-size: 15px;
+}
+
+.bullet-check {
+  color: #FF5C00;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Right Form Column (Clean White) */
+.auth-form-side {
+  flex: 0.9;
+  background-color: #ffffff; /* Crisp white background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 3rem;
+  position: relative;
+}
+
+.auth-form-content {
+  width: 100%;
+  max-width: 360px;
+}
+
+.mobile-only-logo {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.mobile-only-logo .logo-svg {
+  width: 32px;
+  height: 32px;
+}
+
+.mobile-only-logo .logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.auth-form-content h2 {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  color: #0f172a; /* Slate 900 */
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.form-subtitle {
+  font-size: 15px;
+  line-height: 1.5;
+  color: #64748b; /* Slate 500 */
+  margin-bottom: 2.5rem;
+}
+
+.btn-auth-github {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.5rem;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  background-color: #FF5C00; /* Premium Orange */
+  color: #ffffff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.btn-auth-github:hover {
+  background-color: #e04f00;
+}
+
+.btn-auth-github:active {
+  transform: scale(0.98);
+}
+
+.bullet-icon-github {
+  width: 20px;
+  height: 20px;
+}
+
+.form-footer-nav {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.form-footer-nav a {
+  font-weight: 600;
+  text-decoration: none;
+  color: #FF5C00;
+}
+
+.form-footer-nav a:hover {
+  color: #e04f00;
+}
+
+/* Responsive Scaling */
+@media (max-width: 1024px) {
+  .auth-brand-side {
+    display: none; /* Hide visual branding column on smaller screens */
+  }
+  
+  .auth-form-side {
+    flex: 1;
+    background-color: #ffffff;
+  }
+  
+  .mobile-only-logo {
+    display: flex;
+  }
+}
