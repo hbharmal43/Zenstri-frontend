@@ -2573,9 +2573,9 @@ footer {
 }
 
 .btn-sidebar-signout:hover {
-  background-color: #ef4444;
-  color: #ffffff;
-  border-color: #ef4444;
+  background-color: rgba(255, 92, 0, 0.08);
+  color: #FF5C00;
+  border-color: rgba(255, 92, 0, 0.2);
 }
 
 /* Main Content Workspace (Crisp Light Theme) */
